@@ -7,8 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const apiKeyInput = document.getElementById('api-key-input');
     const saveApiKeyBtn = document.getElementById('save-api-key-btn');
     
-    const creationSection = document.getElementById('creation-section');
-    const historySection = document.getElementById('history-section');
+    const mainContent = document.getElementById('main-content');
     
     const storyForm = document.getElementById('story-form');
     const promptTextarea = document.getElementById('story-prompt');
@@ -33,18 +32,18 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 genAI = new GoogleGenerativeAI(apiKey);
                 apiKeySection.style.display = 'none';
-                creationSection.style.display = 'block';
-                historySection.style.display = 'block';
+                mainContent.style.display = 'block'; // מציג את כל התוכן הראשי
                 loadHistory();
             } catch (error) {
                 console.error("Error initializing GoogleGenerativeAI:", error);
-                alert("מפתח ה-API אינו תקין. אנא הזן מפתח חדש.");
+                alert("מפתח ה-API שהוזן אינו תקין. אנא הזן מפתח חדש.");
                 localStorage.removeItem('googleApiKey');
+                apiKeySection.style.display = 'block';
+                mainContent.style.display = 'none';
             }
         } else {
             apiKeySection.style.display = 'block';
-            creationSection.style.display = 'none';
-            historySection.style.display = 'none';
+            mainContent.style.display = 'none';
         }
     }
 
@@ -52,9 +51,15 @@ document.addEventListener('DOMContentLoaded', () => {
     saveApiKeyBtn.addEventListener('click', () => {
         const apiKey = apiKeyInput.value.trim();
         if (apiKey) {
-            localStorage.setItem('googleApiKey', apiKey);
-            apiKeyInput.value = '';
-            initializeApp();
+            // בדיקה בסיסית של תקינות המפתח לפני שמירה
+            try {
+                new GoogleGenerativeAI(apiKey);
+                localStorage.setItem('googleApiKey', apiKey);
+                apiKeyInput.value = '';
+                initializeApp();
+            } catch (e) {
+                alert("נראה שמפתח ה-API אינו תקין. אנא בדוק אותו ונסה שוב.");
+            }
         } else {
             alert('אנא הזן מפתח API.');
         }
@@ -81,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
         toggleLoading(true, "יוצר תסריט...");
 
         try {
-            // --- שלב 1: יצירת תסריט עם Gemini Pro ---
+            // שלב 1: יצירת תסריט
             const scriptGenerationModel = genAI.getGenerativeModel({ model: "gemini-1.5-pro-latest" });
             const generationPrompt = 
                 אתה תסריטאי מומחה לדיאלוגים קצרים בעברית בלבד.
@@ -94,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const scriptResult = await scriptGenerationModel.generateContent(generationPrompt);
             const scriptText = await scriptResult.response.text();
 
-            // --- שלב 2: יצירת קובץ שמע עם מודל TTS ---
+            // שלב 2: יצירת קובץ שמע
             toggleLoading(true, "מפיק קובץ שמע...");
             const ttsModel = genAI.getGenerativeModel({ 
                 model: "gemini-1.5-flash-preview-0514",
@@ -104,10 +109,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const ttsPrompt = צור קובץ שמע מהטקסט הבא, עם קולות שונים לכל דובר: ${scriptText};
             const ttsResult = await ttsModel.generateContent(ttsPrompt);
             
-            // המידע חוזר כ-Base64, נמיר אותו ל-Blob
             const audioBase64 = ttsResult.response.parts[0].inlineData.data;
             const audioBlob = base64ToBlob(audioBase64, 'audio/mpeg');
-
             const audioUrl = URL.createObjectURL(audioBlob);
 
             displayStory(audioUrl, userPrompt);
@@ -121,7 +124,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // פונקציית עזר להמרת Base64 ל-Blob
     function base64ToBlob(base64, contentType = '', sliceSize = 512) {
         const byteCharacters = atob(base64);
         const byteArrays = [];
@@ -137,14 +139,8 @@ document.addEventListener('DOMContentLoaded', () => {
         return new Blob(byteArrays, { type: contentType });
     }
 
-    // טיפול בכפתורי הדוגמאות
-    exampleBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            promptTextarea.value = btn.textContent;
-        });
-    });
+    exampleBtns.forEach(btn => btn.addEventListener('click', () => { promptTextarea.value = btn.textContent; }));
 
-    // טיפול באירועים ברשימת ההיסטוריה
     historyList.addEventListener('click', (e) => {
         const target = e.target;
         const storyItem = target.closest('li');
@@ -154,16 +150,15 @@ document.addEventListener('DOMContentLoaded', () => {
         else if (target.closest('.delete-btn')) deleteStoryFromHistory(storyId);
     });
 
-    // הצגת הסיפור בנגן
     function displayStory(audioUrl, prompt) {
         playerSection.style.display = 'block';
         storyPlayer.src = audioUrl;
         storyPlayer.play();
         downloadBtn.href = audioUrl;
         downloadBtn.download = פשוט_סיפור_${prompt.slice(0, 15).replace(/ /g, '_')}.mp3;
+        playerSection.scrollIntoView({ behavior: 'smooth' });
     }
 
-    // שמירת הסיפור בהיסטוריה
     function saveStoryToHistory(prompt, audioBlob) {
         const reader = new FileReader();
         reader.onload = function(event) {
@@ -188,17 +183,20 @@ document.addEventListener('DOMContentLoaded', () => {
         const history = getHistory();
         historyList.innerHTML = '';
         if (history.length === 0) {
-            historyList.innerHTML = '<li>אין סיפורים שמורים עדיין.</li>';
+            historyList.innerHTML = '<li class="empty-history">אין סיפורים שמורים עדיין.</li>';
         } else {
             history.forEach(story => {
                 const li = document.createElement('li');
                 li.dataset.id = story.id;
+                // שימוש באייקון SVG עבור כפתור המחיקה
                 li.innerHTML = 
                     <div class="story-info">
                         <div class="story-title" title="לחץ לניגון">${story.prompt}</div>
                         <div class="story-date">נוצר ב: ${story.date}</div>
                     </div>
-                    <div class="actions"><button class="delete-btn" title="מחק סיפור">🗑️</button></div>
+                    <button class="delete-btn" title="מחק סיפור">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                    </button>
                 ;
                 historyList.appendChild(li);
             });
@@ -209,7 +207,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const story = getHistory().find(s => s.id == id);
         if (story) {
             displayStory(story.audioDataUrl, story.prompt);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     }
 
