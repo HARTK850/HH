@@ -1,81 +1,77 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>פשוט סיפור</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@700;900&family=Heebo:wght@300;400;600&display=swap" rel="stylesheet">
-    
-    <script type="module" src="https://esm.run/@google/generative-ai"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>פשוט סיפור</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@700;900&family=Heebo:wght@300;400;600&display=swap" rel="stylesheet">
+  <script type="module" src="https://esm.run/@google/generative-ai"></script>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>פשוט סיפור</h1>
-            <p>יצירת סיפורים מרתקים באמצעות בינה מלאכותית</p>
-        </header>
+  <div class="container">
+    <header>
+      <h1>פשוט סיפור</h1>
+      <p>יצירת סיפורים קוליים מרתקים בעזרת בינה מלאכותית</p>
+    </header>
 
-        <main>
-            <section id="api-key-section" class="card api-key-section">
-                <h2>הגדרות ראשוניות</h2>
-                <label for="api-key-input">כדי להתחיל, יש להזין מפתח API של Google AI:</label>
-                
-                <!-- שינוי: עטיפת שדה הקלט והאייקון ביחד -->
-                <div class="api-key-input-wrapper">
-                    <input type="password" id="api-key-input" placeholder="הדבק כאן את מפתח ה-API שלך">
-                    <button id="toggle-api-key-visibility" class="visibility-toggle" title="הצג/הסתר מפתח">
-                        <!-- אייקון העין יוכנס כאן על ידי JavaScript -->
-                    </button>
-                </div>
+    <main>
+      <!-- API KEY SECTION -->
+      <section id="api-key-section" class="card">
+        <h2>הגדרות ראשוניות</h2>
+        <label for="api-key-input">הזן מפתח API של Google AI:</label>
+        <div class="api-key-form">
+          <input type="password" id="api-key-input" placeholder="מפתח ה-API שלך">
+          <button id="save-api-key-btn" class="button-primary">שמור והתחל</button>
+        </div>
+        <p class="api-key-note">המפתח יישמר בדפדפן בלבד. <a href="https://aistudio.google.com/app/apikey" target="_blank">להנפקת מפתח</a>.</p>
+      </section>
 
-                <button id="save-api-key-btn" class="button-primary">שמור והתחל</button>
-                
-                <!-- שינוי: הסרנו את הפסקה עם הטקסט שהיה כאן -->
-                <p class="api-key-note"><a href="https://aistudio.google.com/app/apikey" target="_blank">להנפקת מפתח חדש</a></p>
-            </section>
+      <!-- MAIN INTERFACE -->
+      <div id="main-content" style="display: none;">
+        <!-- יצירת סיפור -->
+        <section class="card">
+          <h2>יצירת סיפור חדש</h2>
+          <form id="story-form">
+            <label for="story-prompt">תן לנו נושא לסיפור...</label>
+            <textarea id="story-prompt" rows="3" placeholder="לדוגמה: שיחה על רעיון לפרויקט..."></textarea>
 
-            <div id="main-content" style="display: none;">
-                <section id="creation-section" class="card creation-zone">
-                    <h2>יצירת סיפור חדש</h2>
-                    <form id="story-form">
-                        <label for="story-prompt">תן לנו נושא לסיפור...</label>
-                        <textarea id="story-prompt" rows="3" placeholder="לדוגמה: ויכוח פילוסופי בין חתול לרחפן..."></textarea>
-                        
-                        <div class="example-prompts">
-                            <button type="button" class="example-btn">שיחה על רעיון חדש לפרויקט</button>
-                            <button type="button" class="example-btn">שתי דמויות פוגשות יצור מכוכב אחר</button>
-                            <button type="button" class="example-btn">ויכוח על איזו פיצה להזמין</button>
-                        </div>
-
-                        <button type="submit" id="create-btn" class="button-primary">
-                            <span class="btn-text">צור סיפור</span>
-                            <div class="loader" style="display: none;"></div>
-                            <span class="status-text" style="display: none;"></span>
-                        </button>
-                    </form>
-                </section>
-
-                <section id="story-player-section" class="card story-player-section" style="display: none;">
-                    <h2>הסיפור שלך מוכן</h2>
-                    <audio id="story-player" controls></audio>
-                    <a id="download-btn" href="#" download="פשוט_סיפור.mp3" class="button-secondary">הורד סיפור</a>
-                </section>
-
-                <section id="history-section" class="history-section">
-                    <h2>היסטוריית הסיפורים</h2>
-                    <ul id="history-list"></ul>
-                </section>
+            <div class="example-prompts">
+              <button type="button" class="example-btn">שיחה על רעיון חדש לפרויקט</button>
+              <button type="button" class="example-btn">שתי דמויות פוגשות יצור מכוכב אחר</button>
+              <button type="button" class="example-btn">ויכוח על איזו פיצה להזמין</button>
             </div>
-        </main>
-        
-        <footer>
-            <p>נוצר מכל ה❤️ על ידי מייבין במקצת</p>
-        </footer>
-    </div>
 
-    <script type="module" src="script.js"></script>
+            <button type="submit" id="create-btn" class="button-primary">
+              <span class="btn-text">צור סיפור</span>
+              <div class="loader" style="display: none;"></div>
+              <span class="status-text" style="display: none;"></span>
+            </button>
+          </form>
+        </section>
+
+        <!-- תוצאה -->
+        <section class="card" id="story-player-section" style="display: none;">
+          <h2>הסיפור שלך מוכן 🎧</h2>
+          <audio id="story-player" controls></audio>
+          <a id="download-btn" class="button-secondary" download="פשוט_סיפור.mp3">הורד סיפור</a>
+        </section>
+
+        <!-- היסטוריה -->
+        <section class="card">
+          <h2>היסטוריית סיפורים</h2>
+          <ul id="history-list"></ul>
+        </section>
+      </div>
+    </main>
+
+    <footer>
+      <p>נוצר באהבה על ידי מייבין במקצת ❤️</p>
+    </footer>
+  </div>
+
+  <script type="module" src="script.js"></script>
 </body>
 </html>
