@@ -1,293 +1,151 @@
-/ style.css /
-:root {
-    --bg-color: #0d1117;
-    --surface-color: #161b22;
-    --border-color: #30363d;
-    --primary-accent-start: #ff8c00;
-    --primary-accent-end: #e84981;
-    --text-color: #c9d1d9;
-    --text-secondary: #8b949e;
-    --font-heading: 'Frank Ruhl Libre', serif;
-    --font-body: 'Heebo', sans-serif;
-    --border-radius: 12px;
-    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
-}
-
-/ --- הגדרות כלליות וריסט --- /
+/* בסיס */
 * {
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
-}
-
-html {
-    scroll-behavior: smooth;
 }
 
 body {
-    font-family: var(--font-body);
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    margin: 0;
-    padding: 20px;
+    font-family: 'Heebo', sans-serif;
+    background: linear-gradient(to right, #f7f8fc, #edf0f5);
+    color: #2d2d2d;
+    line-height: 1.6;
     direction: rtl;
-    line-height: 1.7;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    padding: 0;
+    min-height: 100vh;
 }
 
-/ --- סרגל גלילה מעוצב --- /
-::-webkit-scrollbar {
-    width: 8px;
-}
-::-webkit-scrollbar-track {
-    background: var(--bg-color);
-}
-::-webkit-scrollbar-thumb {
-    background: var(--border-color);
-    border-radius: 10px;
-}
-::-webkit-scrollbar-thumb:hover {
-    background: var(--text-secondary);
-}
-
-/ --- מבנה כללי --- /
+/* עטיפה ראשית */
 .container {
-    max-width: 800px;
-    margin: 0 auto;
+    max-width: 1000px;
+    margin: auto;
     padding: 20px;
 }
 
+/* כותרת */
 header {
     text-align: center;
-    margin-bottom: 50px;
+    margin-bottom: 40px;
 }
 
-h1 {
-    font-family: var(--font-heading);
-    font-size: 3.5rem;
-    font-weight: 900;
-    background: linear-gradient(90deg, var(--primary-accent-start), var(--primary-accent-end));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin-bottom: 0.5rem;
+header h1 {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 3em;
+    color: #333;
+    margin-bottom: 10px;
 }
 
 header p {
-    font-size: 1.1rem;
-    color: var(--text-secondary);
+    font-size: 1.2em;
+    color: #555;
 }
 
-/ --- כרטיסיות (Cards) --- /
+/* כרטיסים */
 .card {
-    background-color: var(--surface-color);
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
-    padding: 2rem;
-    margin-bottom: 2rem;
-    box-shadow: var(--shadow);
-    transition: all 0.3s ease;
-    opacity: 0;
-    transform: translateY(20px);
-    animation: fadeIn 0.5s forwards;
+    background-color: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    padding: 30px;
+    margin-bottom: 30px;
+    transition: box-shadow 0.3s ease;
 }
 
-@keyframes fadeIn {
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+.card:hover {
+    box-shadow: 0 6px 24px rgba(0,0,0,0.1);
 }
 
 h2 {
-    font-family: var(--font-heading);
-    font-size: 1.8rem;
-    color: var(--text-color);
-    margin-bottom: 1.5rem;
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: 1rem;
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 1.6em;
+    color: #222;
+    margin-bottom: 20px;
 }
 
+/* טפסים ושדות */
 label {
     display: block;
-    margin-bottom: 0.75rem;
     font-weight: 600;
+    margin-bottom: 10px;
 }
 
-/ --- טפסים וכפתורים --- /
-textarea, input[type="password"] {
+input[type="password"],
+textarea {
     width: 100%;
-    padding: 12px 15px;
-    font-size: 1rem;
-    font-family: var(--font-body);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    transition: border-color 0.3s, box-shadow 0.3s;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    font-size: 1em;
+    transition: border 0.3s;
+    margin-bottom: 20px;
 }
 
-textarea:focus, input[type="password"]:focus {
+input:focus,
+textarea:focus {
+    border-color: #448aff;
     outline: none;
-    border-color: var(--primary-accent-start);
-    box-shadow: 0 0 0 3px rgba(255, 140, 0, 0.2);
+}
+
+/* כפתורים */
+.button-primary, .button-secondary {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 12px;
+    font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease;
 }
 
 .button-primary {
-    width: 100%;
-    padding: 12px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    background: linear-gradient(90deg, var(--primary-accent-start), var(--primary-accent-end));
-    background-size: 200% 100%;
-    transition: background-position 0.4s ease, transform 0.1s ease;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    min-height: 52px;
+    background-color: #448aff;
+    color: #fff;
 }
 
-.button-primary:hover:not(:disabled) {
-    background-position: 100% 0;
+.button-primary:hover {
+    background-color: #2962ff;
 }
 
-.button-primary:active:not(:disabled) {
-    transform: scale(0.98);
+.button-secondary {
+    background-color: #f1f1f1;
+    color: #333;
 }
 
-.button-primary:disabled {
-    background: var(--border-color);
-    cursor: not-allowed;
-    opacity: 0.7;
+.button-secondary:hover {
+    background-color: #ddd;
 }
 
-.api-key-form {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-}
-#save-api-key-btn { width: auto; }
-.api-key-note { font-size: 0.9rem; color: var(--text-secondary); margin-top: 1rem; }
-.api-key-note a { color: var(--primary-accent-start); text-decoration: none; }
-.api-key-note a:hover { text-decoration: underline; }
-
+/* מחולל הסיפור */
 .example-prompts {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
-    margin: 1.5rem 0;
+    margin-bottom: 20px;
 }
 
 .example-btn {
-    background-color: transparent;
-    border: 1px solid var(--border-color);
-    color: var(--text-secondary);
-    padding: 8px 16px;
-    border-radius: 20px;
+    background-color: #e3f2fd;
+    color: #1565c0;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 14px;
     cursor: pointer;
-    font-size: 0.9rem;
-    transition: all 0.3s ease;
+    transition: background 0.3s;
 }
 
 .example-btn:hover {
-    border-color: var(--primary-accent-start);
-    color: var(--primary-accent-start);
-    transform: translateY(-2px);
+    background-color: #bbdefb;
 }
 
-/ --- נגן והיסטוריה --- /
-#story-player {
-    width: 100%;
-    margin-bottom: 1.5rem;
-    color-scheme: dark;
-}
-
-.button-secondary {
-    display: inline-block;
-    text-decoration: none;
-    padding: 10px 20px;
-    background-color: var(--surface-color);
-    color: var(--text-color);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    transition: all 0.3s ease;
-}
-
-.button-secondary:hover {
-    background-color: var(--border-color);
-    color: white;
-}
-
-.history-section h2 { border: none; padding: 0; }
-#history-list { list-style: none; }
-
-#history-list li {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1.25rem;
-    background-color: var(--surface-color);
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
-    margin-bottom: 1rem;
-    transition: all 0.3s ease;
-}
-
-#history-list li:hover {
-    border-color: var(--primary-accent-start);
-    transform: translateY(-3px);
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
-}
-
-#history-list li .story-info { flex-grow: 1; }
-#history-list li .story-title { font-weight: 600; cursor: pointer; }
-#history-list li .story-date { font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.25rem; }
-
-#history-list li .delete-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: var(--text-secondary);
-    padding: 8px;
+/* מצב טעינה */
+.loader {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #448aff;
     border-radius: 50%;
-    transition: color 0.3s, background-color 0.3s;
-}
-
-#history-list li .delete-btn:hover {
-    color: #ff4d4d;
-    background-color: rgba(255, 77, 77, 0.1);
-}
-
-#history-list li .delete-btn svg {
     width: 20px;
     height: 20px;
-    vertical-align: middle;
-}
-#history-list li.empty-history {
-    justify-content: center;
-    color: var(--text-secondary);
-    border-style: dashed;
-}
-#history-list li.empty-history:hover {
-    transform: none;
-    box-shadow: none;
-    border-color: var(--border-color);
-}
-
-
-/ --- אנימציית טעינה --- /
-.loader {
-    border: 4px solid rgba(255, 255, 255, 0.2);
-    border-top: 4px solid white;
-    border-radius: 50%;
-    width: 24px;
-    height: 24px;
     animation: spin 1s linear infinite;
+    display: inline-block;
+    vertical-align: middle;
 }
 
 @keyframes spin {
@@ -295,20 +153,80 @@ textarea:focus, input[type="password"]:focus {
     100% { transform: rotate(360deg); }
 }
 
-/ --- פוטר --- /
-footer {
-    text-align: center;
-    margin-top: 4rem;
-    padding-top: 2rem;
-    border-top: 1px solid var(--border-color);
-    color: var(--text-secondary);
-    font-size: 0.9rem;
+.status-text {
+    font-weight: 600;
+    margin-right: 10px;
+    color: #444;
 }
 
-/ --- רספונסיביות --- /
-@media (max-width: 768px) {
-    h1 { font-size: 2.5rem; }
-    .card { padding: 1.5rem; }
-    .api-key-form { flex-direction: column; align-items: stretch; }
-    #save-api-key-btn { width: 100%; }
+/* נגן אודיו */
+audio {
+    width: 100%;
+    margin: 20px 0;
+}
+
+/* היסטוריה */
+.history-section ul {
+    list-style: none;
+    padding: 0;
+}
+
+.history-section li {
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 15px 20px;
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background 0.3s;
+}
+
+.history-section li:hover {
+    background: #f1f1f1;
+}
+
+.story-info {
+    flex: 1;
+    cursor: pointer;
+}
+
+.story-title {
+    font-weight: 600;
+    font-size: 1em;
+    margin-bottom: 4px;
+}
+
+.story-date {
+    font-size: 0.9em;
+    color: #666;
+}
+
+/* כפתור מחיקה */
+.delete-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #e53935;
+    transition: transform 0.2s;
+}
+
+.delete-btn:hover {
+    transform: scale(1.1);
+}
+
+/* פוטר */
+footer {
+    text-align: center;
+    margin-top: 40px;
+    font-size: 0.9em;
+    color: #888;
+}
+
+/* רספונסיביות */
+@media (max-width: 600px) {
+    .example-prompts {
+        flex-direction: column;
+    }
 }
