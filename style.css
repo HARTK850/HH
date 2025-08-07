@@ -1,276 +1,244 @@
 /* בסיס */
 * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-    font-family: 'Heebo', sans-serif;
-    background: linear-gradient(to right, #f7f8fc, #edf0f5);
-    color: #2d2d2d;
-    line-height: 1.6;
-    direction: rtl;
-    padding: 0;
-    min-height: 100vh;
+  font-family: 'Heebo', sans-serif;
+  background: linear-gradient(to right, #f7f8fc, #edf0f5);
+  color: #2d2d2d;
+  line-height: 1.6;
+  direction: rtl;
+  min-height: 100vh;
 }
 
-/* עטיפה ראשית */
+/* עטיפה */
 .container {
-    max-width: 1000px;
-    margin: auto;
-    padding: 20px;
+  max-width: 1000px;
+  margin: auto;
+  padding: 20px;
 }
 
 /* כותרת */
 header {
-    text-align: center;
-    margin-bottom: 40px;
+  text-align: center;
+  margin-bottom: 40px;
 }
 
 header h1 {
-    font-family: 'Frank Ruhl Libre', serif;
-    font-size: 3em;
-    color: #333;
-    margin-bottom: 10px;
+  font-family: 'Frank Ruhl Libre', serif;
+  font-size: 3em;
+  color: #333;
+  margin-bottom: 10px;
 }
 
 header p {
-    font-size: 1.2em;
-    color: #555;
+  font-size: 1.2em;
+  color: #555;
 }
 
 /* כרטיסים */
 .card {
-    background-color: #fff;
-    border-radius: 16px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-    padding: 30px;
-    margin-bottom: 30px;
-    transition: box-shadow 0.3s ease;
+  background-color: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  padding: 30px;
+  margin-bottom: 30px;
+  transition: box-shadow 0.3s ease;
 }
 
 .card:hover {
-    box-shadow: 0 6px 24px rgba(0,0,0,0.1);
+  box-shadow: 0 6px 24px rgba(0,0,0,0.1);
 }
 
 h2 {
-    font-family: 'Frank Ruhl Libre', serif;
-    font-size: 1.6em;
-    color: #222;
-    margin-bottom: 20px;
+  font-family: 'Frank Ruhl Libre', serif;
+  font-size: 1.6em;
+  color: #222;
+  margin-bottom: 20px;
 }
 
 /* טפסים ושדות */
 label {
-    display: block;
-    font-weight: 600;
-    margin-bottom: 10px;
+  display: block;
+  font-weight: 600;
+  margin-bottom: 10px;
 }
 
 input[type="password"],
 textarea {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #ccc;
-    border-radius: 12px;
-    font-size: 1em;
-    transition: border 0.3s;
-    margin-bottom: 20px;
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  font-size: 1em;
+  transition: border 0.3s;
+  margin-bottom: 20px;
 }
 
 input:focus,
 textarea:focus {
-    border-color: #448aff;
-    outline: none;
+  border-color: #448aff;
+  outline: none;
 }
 
 /* כפתורים */
 .button-primary, .button-secondary {
-    padding: 12px 24px;
-    border: none;
-    border-radius: 12px;
-    font-size: 1em;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.3s ease;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 12px;
+  font-size: 1em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease;
 }
 
 .button-primary {
-    background-color: #448aff;
-    color: #fff;
+  background-color: #448aff;
+  color: #fff;
 }
 
 .button-primary:hover {
-    background-color: #2962ff;
+  background-color: #2962ff;
 }
 
 .button-secondary {
-    background-color: #f1f1f1;
-    color: #333;
+  background-color: #f1f1f1;
+  color: #333;
+  display: inline-block;
+  text-decoration: none;
+  margin-top: 10px;
 }
 
 .button-secondary:hover {
-    background-color: #ddd;
+  background-color: #ddd;
 }
 
-/* מחולל הסיפור */
+/* כפתורי דוגמה */
 .example-prompts {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
 }
 
 .example-btn {
-    background-color: #e3f2fd;
-    color: #1565c0;
-    border: none;
-    border-radius: 8px;
-    padding: 8px 14px;
-    cursor: pointer;
-    transition: background 0.3s;
+  background-color: #e3f2fd;
+  color: #1565c0;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: background 0.3s;
 }
 
 .example-btn:hover {
-    background-color: #bbdefb;
+  background-color: #bbdefb;
 }
 
-/* מצב טעינה */
+/* טעינה */
 .loader {
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid #448aff;
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    animation: spin 1s linear infinite;
-    display: inline-block;
-    vertical-align: middle;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #448aff;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  animation: spin 1s linear infinite;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 10px;
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 .status-text {
-    font-weight: 600;
-    margin-right: 10px;
-    color: #444;
+  font-weight: 600;
+  color: #444;
+  vertical-align: middle;
 }
 
 /* נגן אודיו */
 audio {
-    width: 100%;
-    margin: 20px 0;
+  width: 100%;
+  margin: 20px 0;
 }
 
 /* היסטוריה */
-.history-section ul {
-    list-style: none;
-    padding: 0;
+#history-list {
+  list-style: none;
+  padding: 0;
 }
 
-.history-section li {
-    background: #f9f9f9;
-    border: 1px solid #ddd;
-    border-radius: 12px;
-    padding: 15px 20px;
-    margin-bottom: 12px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: background 0.3s;
+#history-list li {
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 15px 20px;
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background 0.3s;
 }
 
-.history-section li:hover {
-    background: #f1f1f1;
+#history-list li:hover {
+  background: #f1f1f1;
 }
 
 .story-info {
-    flex: 1;
-    cursor: pointer;
+  flex: 1;
+  cursor: pointer;
 }
 
 .story-title {
-    font-weight: 600;
-    font-size: 1em;
-    margin-bottom: 4px;
+  font-weight: 600;
+  font-size: 1em;
+  margin-bottom: 4px;
 }
 
 .story-date {
-    font-size: 0.9em;
-    color: #666;
+  font-size: 0.9em;
+  color: #666;
 }
 
 /* כפתור מחיקה */
 .delete-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: #e53935;
-    transition: transform 0.2s;
+  background: none;
+  border: none;
+  font-size: 1.2em;
+  cursor: pointer;
+  color: #e53935;
+  transition: transform 0.2s;
 }
 
 .delete-btn:hover {
-    transform: scale(1.1);
+  transform: scale(1.2);
 }
 
 /* פוטר */
 footer {
-    text-align: center;
-    margin-top: 40px;
-    font-size: 0.9em;
-    color: #888;
+  text-align: center;
+  margin-top: 40px;
+  font-size: 0.9em;
+  color: #888;
 }
 
 /* רספונסיביות */
 @media (max-width: 600px) {
-    .example-prompts {
-        flex-direction: column;
-    }
-}
+  .example-prompts {
+    flex-direction: column;
+  }
 
+  .card {
+    padding: 20px;
+  }
 
-/ --- עיצוב חדש עבור שדה הקלט עם אייקון --- /
-.api-key-input-wrapper {
-    position: relative;
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px; / הוספת מרווח שהיה על האינפוט /
-}
-
-.api-key-input-wrapper input {
-    padding-left: 45px; / יצירת מקום לאייקון משמאל (ב-RTL) /
-    margin-bottom: 0; / איפוס מרווח שהיה על האינפוט /
-}
-
-.visibility-toggle {
-    position: absolute;
-    left: 1px; / מיקום האייקון בצד שמאל של השדה /
-    top: 1px;
-    bottom: 1px;
-    width: 40px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #666;
-    transition: color 0.2s;
-}
-
-.visibility-toggle:hover {
-    color: #000;
-}
-
-.visibility-toggle svg {
-    width: 22px;
-    height: 22px;
-}
-
-/ התאמת כפתור שמור והתחל /
-#save-api-key-btn {
+  .button-primary, .button-secondary {
     width: 100%;
+  }
 }
