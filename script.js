@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const apiKeySection = document.getElementById('api-key-section');
     const apiKeyInput = document.getElementById('api-key-input');
     const saveApiKeyBtn = document.getElementById('save-api-key-btn');
+    const toggleApiKeyVisibilityBtn = document.getElementById('toggle-api-key-visibility');
     
     const mainContent = document.getElementById('main-content');
     
@@ -25,38 +26,56 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let genAI;
 
+    // --- הגדרת אייקונים להצגת/הסתרת סיסמה ---
+    const eyeIcon = <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path><circle cx="12" cy="12" r="3"></circle></svg>;
+    const eyeOffIcon = <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"></path><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"></path><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"></path><line x1="2" x2="22" y1="2" y2="22"></line></svg>;
+
     // פונקציית אתחול - בודקת אם קיים מפתח API
     function initializeApp() {
+        toggleApiKeyVisibilityBtn.innerHTML = eyeIcon; // הצבת האייקון הראשוני
         const apiKey = localStorage.getItem('googleApiKey');
         if (apiKey) {
             try {
                 genAI = new GoogleGenerativeAI(apiKey);
                 apiKeySection.style.display = 'none';
-                mainContent.style.display = 'block'; // מציג את כל התוכן הראשי
+                mainContent.style.display = 'block';
                 loadHistory();
             } catch (error) {
                 console.error("Error initializing GoogleGenerativeAI:", error);
-                alert("מפתח ה-API שהוזן אינו תקין. אנא הזן מפתח חדש.");
                 localStorage.removeItem('googleApiKey');
-                apiKeySection.style.display = 'block';
-                mainContent.style.display = 'none';
+                showApiKeySection();
             }
         } else {
-            apiKeySection.style.display = 'block';
-            mainContent.style.display = 'none';
+            showApiKeySection();
         }
     }
 
-    // שמירת מפתח ה-API
+    function showApiKeySection() {
+        apiKeySection.style.display = 'block';
+        mainContent.style.display = 'none';
+    }
+
+    // --- לוגיקה חדשה: הצגה והסתרה של מפתח ה-API ---
+    toggleApiKeyVisibilityBtn.addEventListener('click', () => {
+        if (apiKeyInput.type === 'password') {
+            apiKeyInput.type = 'text';
+            toggleApiKeyVisibilityBtn.innerHTML = eyeOffIcon;
+        } else {
+            apiKeyInput.type = 'password';
+            toggleApiKeyVisibilityBtn.innerHTML = eyeIcon;
+        }
+    });
+
+    // שמירת מפתח ה-API ומעבר לאזור היצירה
     saveApiKeyBtn.addEventListener('click', () => {
         const apiKey = apiKeyInput.value.trim();
         if (apiKey) {
-            // בדיקה בסיסית של תקינות המפתח לפני שמירה
             try {
                 new GoogleGenerativeAI(apiKey);
                 localStorage.setItem('googleApiKey', apiKey);
-                apiKeyInput.value = '';
                 initializeApp();
+                // גלילה חלקה למטה לאחר המעבר
+                setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
             } catch (e) {
                 alert("נראה שמפתח ה-API אינו תקין. אנא בדוק אותו ונסה שוב.");
             }
@@ -88,11 +107,13 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             // שלב 1: יצירת תסריט
             const scriptGenerationModel = genAI.getGenerativeModel({ model: "gemini-1.5-pro-latest" });
+            
+            // --- שינוי: הנחיה חדשה ללא הגבלת דמויות ---
             const generationPrompt = 
                 אתה תסריטאי מומחה לדיאלוגים קצרים בעברית בלבד.
                 בהינתן הנושא: "${userPrompt}", בצע את המשימות הבאות:
-                1. החלט על 1 עד 2 דמויות.
-                2. כתוב דיאלוג קצר (עד 8 שורות סך הכל) ביניהן.
+                1. החלט על מספר הדמויות המתאים ביותר לסיפור, ללא הגבלה.
+                2. כתוב דיאלוג קצר וקולע ביניהן.
                 3. הצג את הפלט בפורמט הבא בלבד: כל שורה מתחילה ב"דובר 1:", "דוברת 2:" וכו'.
                 4. אל תוסיף שום טקסט, כותרות או הסברים לפני או אחרי הדיאלוג.
             ;
@@ -146,7 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const storyItem = target.closest('li');
         if (!storyItem) return;
         const storyId = storyItem.dataset.id;
-        if (target.closest('.story-title')) playStoryFromHistory(storyId);
+        if (target.closest('.story-info')) playStoryFromHistory(storyId);
         else if (target.closest('.delete-btn')) deleteStoryFromHistory(storyId);
     });
 
@@ -188,7 +209,6 @@ document.addEventListener('DOMContentLoaded', () => {
             history.forEach(story => {
                 const li = document.createElement('li');
                 li.dataset.id = story.id;
-                // שימוש באייקון SVG עבור כפתור המחיקה
                 li.innerHTML = 
                     <div class="story-info">
                         <div class="story-title" title="לחץ לניגון">${story.prompt}</div>
@@ -220,9 +240,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isLoading) {
             createBtn.disabled = true;
             btnText.style.display = 'none';
-            loader.style.display = 'block';
+            loader.style.display = 'inline-block';
             statusText.textContent = statusMsg;
-            statusText.style.display = 'inline';
+            statusText.style.display = 'inline-block';
         } else {
             createBtn.disabled = false;
             btnText.style.display = 'inline';
@@ -231,6 +251,5 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // התחלת האפליקציה בטעינת הדף
     initializeApp();
 });
