@@ -204,7 +204,6 @@ textarea:focus, input[type="password"]:focus {
 #story-player {
     width: 100%;
     margin-bottom: 1.5rem;
-    / נותן לדפדפן רמז לעצב את הנגן בערכת צבעים כהה /
     color-scheme: dark;
 }
 
@@ -245,17 +244,9 @@ textarea:focus, input[type="password"]:focus {
     box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
 }
 
-#history-list li .story-title {
-    font-weight: 600;
-    cursor: pointer;
-    flex-grow: 1;
-}
-
-#history-list li .story-date {
-    font-size: 0.8rem;
-    color: var(--text-secondary);
-    margin-top: 0.25rem;
-}
+#history-list li .story-info { flex-grow: 1; }
+#history-list li .story-title { font-weight: 600; cursor: pointer; }
+#history-list li .story-date { font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.25rem; }
 
 #history-list li .delete-btn {
     background: none;
@@ -277,6 +268,17 @@ textarea:focus, input[type="password"]:focus {
     height: 20px;
     vertical-align: middle;
 }
+#history-list li.empty-history {
+    justify-content: center;
+    color: var(--text-secondary);
+    border-style: dashed;
+}
+#history-list li.empty-history:hover {
+    transform: none;
+    box-shadow: none;
+    border-color: var(--border-color);
+}
+
 
 / --- אנימציית טעינה --- /
 .loader {
