@@ -1,77 +1,211 @@
-<!DOCTYPE html>
-<html lang="he" dir="rtl">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>פשוט סיפור</title>
-  <link rel="stylesheet" href="style.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@700;900&family=Heebo:wght@300;400;600&display=swap" rel="stylesheet">
-  <script type="module" src="https://esm.run/@google/generative-ai"></script>
-</head>
-<body>
-  <div class="container">
-    <header>
-      <h1>פשוט סיפור</h1>
-      <p>יצירת סיפורים קוליים מרתקים בעזרת בינה מלאכותית</p>
-    </header>
+// script.js
+import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
 
-    <main>
-      <!-- API KEY SECTION -->
-      <section id="api-key-section" class="card">
-        <h2>הגדרות ראשוניות</h2>
-        <label for="api-key-input">הזן מפתח API של Google AI:</label>
-        <div class="api-key-form">
-          <input type="password" id="api-key-input" placeholder="מפתח ה-API שלך">
-          <button id="save-api-key-btn" class="button-primary">שמור והתחל</button>
+document.addEventListener("DOMContentLoaded", () => {
+  const apiKeyInput = document.getElementById("api-key-input");
+  const saveApiKeyBtn = document.getElementById("save-api-key-btn");
+  const mainContent = document.getElementById("main-content");
+  const apiKeySection = document.getElementById("api-key-section");
+
+  const storyForm = document.getElementById("story-form");
+  const promptTextarea = document.getElementById("story-prompt");
+  const createBtn = document.getElementById("create-btn");
+  const btnText = createBtn.querySelector(".btn-text");
+  const loader = createBtn.querySelector(".loader");
+  const statusText = createBtn.querySelector(".status-text");
+
+  const storyPlayer = document.getElementById("story-player");
+  const downloadBtn = document.getElementById("download-btn");
+  const playerSection = document.getElementById("story-player-section");
+
+  const historyList = document.getElementById("history-list");
+  const exampleBtns = document.querySelectorAll(".example-btn");
+
+  let genAI;
+
+  function initializeApp() {
+    const apiKey = localStorage.getItem("googleApiKey");
+    if (apiKey) {
+      try {
+        genAI = new GoogleGenerativeAI(apiKey);
+        apiKeySection.style.display = "none";
+        mainContent.style.display = "block";
+        renderHistory();
+      } catch (err) {
+        alert("מפתח API שגוי, נסה שוב.");
+        localStorage.removeItem("googleApiKey");
+      }
+    }
+  }
+
+  saveApiKeyBtn.addEventListener("click", () => {
+    const key = apiKeyInput.value.trim();
+    if (key) {
+      try {
+        new GoogleGenerativeAI(key); // ניסיון התחברות
+        localStorage.setItem("googleApiKey", key);
+        apiKeyInput.value = "";
+        initializeApp();
+      } catch {
+        alert("נראה שמפתח ה-API שגוי.");
+      }
+    } else {
+      alert("אנא הזן מפתח API.");
+    }
+  });
+
+  storyForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const prompt = promptTextarea.value.trim();
+    if (!prompt) {
+      alert("אנא הזן נושא לסיפור.");
+      return;
+    }
+
+    toggleLoading(true, "יוצר תסריט...");
+
+    try {
+      const scriptModel = genAI.getGenerativeModel({ model: "gemini-1.5-pro-latest" });
+
+      const scriptPrompt = `
+אתה תסריטאי מומחה לכתיבה בעברית.
+בהינתן הנושא: "${prompt}", בצע:
+1. הגדר 1–2 דמויות.
+2. כתוב תסריט דיאלוג קצר, עד 8 שורות, בפורמט:
+"דובר 1: ...", "דוברת 2: ..." וכן הלאה.
+3. אל תוסיף טקסט נוסף או הסברים.
+`;
+
+      const scriptResult = await scriptModel.generateContent(scriptPrompt);
+      const scriptText = (await scriptResult.response.text()).trim();
+
+      toggleLoading(true, "מפיק קובץ שמע...");
+
+      const ttsModel = genAI.getGenerativeModel({
+        model: "gemini-1.5-flash-preview-0514",
+        generationConfig: { responseMimeType: "audio/mpeg" }
+      });
+
+      const ttsPrompt = `צור קובץ שמע עם קולות שונים לכל דמות מהטקסט הבא:\n${scriptText}`;
+      const ttsResult = await ttsModel.generateContent(ttsPrompt);
+
+      const audioBase64 = ttsResult.response.parts[0].inlineData.data;
+      const audioBlob = base64ToBlob(audioBase64, "audio/mpeg");
+      const audioUrl = URL.createObjectURL(audioBlob);
+
+      displayStory(audioUrl, prompt);
+      saveStory(prompt, audioBlob);
+
+    } catch (err) {
+      console.error(err);
+      alert("שגיאה ביצירת הסיפור: " + err.message);
+    } finally {
+      toggleLoading(false);
+    }
+  });
+
+  function toggleLoading(isLoading, msg = "") {
+    createBtn.disabled = isLoading;
+    btnText.style.display = isLoading ? "none" : "inline";
+    loader.style.display = isLoading ? "inline-block" : "none";
+    statusText.style.display = isLoading ? "inline" : "none";
+    statusText.textContent = msg;
+  }
+
+  function base64ToBlob(base64, type = "", sliceSize = 512) {
+    const byteCharacters = atob(base64);
+    const byteArrays = [];
+    for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+      const slice = byteCharacters.slice(offset, offset + sliceSize);
+      const byteNumbers = [...slice].map(ch => ch.charCodeAt(0));
+      byteArrays.push(new Uint8Array(byteNumbers));
+    }
+    return new Blob(byteArrays, { type });
+  }
+
+  function displayStory(audioUrl, prompt) {
+    playerSection.style.display = "block";
+    storyPlayer.src = audioUrl;
+    storyPlayer.play();
+    downloadBtn.href = audioUrl;
+    downloadBtn.download = `פשוט_סיפור_${prompt.slice(0, 10).replace(/ /g, "_")}.mp3`;
+    playerSection.scrollIntoView({ behavior: "smooth" });
+  }
+
+  function saveStory(prompt, blob) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const story = {
+        id: Date.now(),
+        prompt,
+        date: new Date().toLocaleString("he-IL"),
+        audioDataUrl: e.target.result
+      };
+      const history = getHistory();
+      history.unshift(story);
+      localStorage.setItem("storyHistory", JSON.stringify(history.slice(0, 20)));
+      renderHistory();
+    };
+    reader.readAsDataURL(blob);
+  }
+
+  function getHistory() {
+    return JSON.parse(localStorage.getItem("storyHistory")) || [];
+  }
+
+  function renderHistory() {
+    const history = getHistory();
+    historyList.innerHTML = "";
+
+    if (history.length === 0) {
+      historyList.innerHTML = `<li class="empty-history">אין סיפורים עדיין.</li>`;
+      return;
+    }
+
+    history.forEach((story) => {
+      const li = document.createElement("li");
+      li.dataset.id = story.id;
+      li.innerHTML = `
+        <div class="story-info">
+          <div class="story-title" title="נגן סיפור">${story.prompt}</div>
+          <div class="story-date">נוצר ב: ${story.date}</div>
         </div>
-        <p class="api-key-note">המפתח יישמר בדפדפן בלבד. <a href="https://aistudio.google.com/app/apikey" target="_blank">להנפקת מפתח</a>.</p>
-      </section>
+        <button class="delete-btn" title="מחק סיפור">🗑️</button>
+      `;
+      historyList.appendChild(li);
+    });
+  }
 
-      <!-- MAIN INTERFACE -->
-      <div id="main-content" style="display: none;">
-        <!-- יצירת סיפור -->
-        <section class="card">
-          <h2>יצירת סיפור חדש</h2>
-          <form id="story-form">
-            <label for="story-prompt">תן לנו נושא לסיפור...</label>
-            <textarea id="story-prompt" rows="3" placeholder="לדוגמה: שיחה על רעיון לפרויקט..."></textarea>
+  historyList.addEventListener("click", (e) => {
+    const li = e.target.closest("li");
+    if (!li) return;
+    const id = li.dataset.id;
+    if (e.target.classList.contains("delete-btn")) {
+      deleteStory(id);
+    } else {
+      playStory(id);
+    }
+  });
 
-            <div class="example-prompts">
-              <button type="button" class="example-btn">שיחה על רעיון חדש לפרויקט</button>
-              <button type="button" class="example-btn">שתי דמויות פוגשות יצור מכוכב אחר</button>
-              <button type="button" class="example-btn">ויכוח על איזו פיצה להזמין</button>
-            </div>
+  function playStory(id) {
+    const story = getHistory().find((s) => s.id == id);
+    if (story) {
+      displayStory(story.audioDataUrl, story.prompt);
+    }
+  }
 
-            <button type="submit" id="create-btn" class="button-primary">
-              <span class="btn-text">צור סיפור</span>
-              <div class="loader" style="display: none;"></div>
-              <span class="status-text" style="display: none;"></span>
-            </button>
-          </form>
-        </section>
+  function deleteStory(id) {
+    const history = getHistory().filter((s) => s.id != id);
+    localStorage.setItem("storyHistory", JSON.stringify(history));
+    renderHistory();
+  }
 
-        <!-- תוצאה -->
-        <section class="card" id="story-player-section" style="display: none;">
-          <h2>הסיפור שלך מוכן 🎧</h2>
-          <audio id="story-player" controls></audio>
-          <a id="download-btn" class="button-secondary" download="פשוט_סיפור.mp3">הורד סיפור</a>
-        </section>
+  exampleBtns.forEach((btn) =>
+    btn.addEventListener("click", () => {
+      promptTextarea.value = btn.textContent;
+    })
+  );
 
-        <!-- היסטוריה -->
-        <section class="card">
-          <h2>היסטוריית סיפורים</h2>
-          <ul id="history-list"></ul>
-        </section>
-      </div>
-    </main>
-
-    <footer>
-      <p>נוצר באהבה על ידי מייבין במקצת ❤️</p>
-    </footer>
-  </div>
-
-  <script type="module" src="script.js"></script>
-</body>
-</html>
+  initializeApp();
+});
+ml>
