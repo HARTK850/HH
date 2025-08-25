@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>קלפי משימות – הפוך על הפוך (מוכן להדפסה)</title>
+  <style>
+    /* —— צבעים ועיטורים —— */
+    :root{
+      --paper:#fffdf7;          /* רקע נייר עדין */
+      --ink:#0f172a;            /* טקסט */
+      --accent:#0ea5e9;         /* דגשים */
+      --accent2:#a855f7;        /* דגשים משניים */
+      --border:#1e293b;         /* מסגרת כהה עדינה */
+      --gold:#f59e0b;           /* זהב לעיטורים */
+      --mint:#10b981;           /* ירקרק לעיטורים */
+    }
+
+    @page { size: A4; margin: 1cm; }
+
+    html,body{height:100%}
+    body{
+      margin:0; background:var(--paper); color:var(--ink);
+      font-family: "Rubik", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+    }
+
+    /* --- אזור פקדים למסך (מוסתר בהדפסה) --- */
+    header{position:sticky; top:0; background:linear-gradient(180deg, rgba(255,253,247,.9), rgba(255,253,247,.6));
+      backdrop-filter:saturate(1.1) blur(6px); border-bottom:1px dashed #e5e7eb; padding:10px 12px;}
+    .title{font-weight:900; font-size:clamp(18px,2.5vw,26px)}
+    .subtitle{color:#475569; font-size:14px}
+    .controls{margin-top:8px; display:flex; gap:8px; flex-wrap:wrap}
+    button{appearance:none; border:1px solid #cbd5e1; background:#ffffff; padding:8px 12px; border-radius:12px; cursor:pointer; font-weight:700}
+    button:hover{border-color:#94a3b8}
+
+    main{padding:10px}
+
+    /* —— גריד קלפים עם מידות מדויקות לדפוס —— */
+    .sheet{
+      display:grid; grid-template-columns: repeat(3, 6cm); /* 3 טורים של 6 ס"מ */
+      grid-auto-rows: 4cm; /* גובה קלף: 4 ס"מ */
+      gap: .5cm; /* רווחים: 0.5 ס"מ */
+      justify-content:center; /* מרכז בתוך הדף */
+    }
+
+    /* —— קלף מעוצב —— */
+    .card{
+      position:relative; background: #fff;
+      border: 2px solid var(--border);
+      border-radius: 10mm; /* פינות מעוגלות גדולות */
+      box-shadow: 0 2px 0 rgba(15,23,42,.04), inset 0 0 0 6px #ffffff; /* מסגרת כפולה לבנה בפנים */
+      overflow:hidden; page-break-inside: avoid;
+      display:flex; align-items:center; justify-content:center; text-align:center; padding:6mm;
+      font-weight:800; line-height:1.25; font-size:16px;
+      background-image:
+        radial-gradient( circle at 8% 10%, rgba(14,165,233,.12) 0 20%, transparent 22%),
+        radial-gradient( circle at 92% 90%, rgba(168,85,247,.12) 0 20%, transparent 22%),
+        repeating-linear-gradient( 45deg, rgba(15,23,42,.03) 0 6px, transparent 6px 12px);
+    }
+
+    /* סרט עיטור עליון */
+    .card::before{
+      content:""; position:absolute; inset:auto 0 0 0; height:6mm;
+      background:
+        linear-gradient(90deg, var(--accent), var(--accent2), var(--gold), var(--mint));
+      opacity:.25;
+    }
+    /* פינות מעוטרות */
+    .card::after{
+      content:""; position:absolute; inset:0; pointer-events:none;
+      background:
+        radial-gradient(12mm 12mm at 0 0, rgba(14,165,233,.35), transparent 60%),
+        radial-gradient(12mm 12mm at 100% 0, rgba(245,158,11,.35), transparent 60%),
+        radial-gradient(12mm 12mm at 0 100%, rgba(16,185,129,.35), transparent 60%),
+        radial-gradient(12mm 12mm at 100% 100%, rgba(168,85,247,.35), transparent 60%);
+      mix-blend-mode:multiply; opacity:.25;
+      border-radius: inherit;
+    }
+
+    .num{
+      position:absolute; top:3.5mm; inset-inline-start:5mm;
+      font-size:11px; color:#0ea5e9; letter-spacing:.3px;
+      background: #ecfeff; border:1px dashed #67e8f9; padding:2px 6px; border-radius:999px;
+    }
+
+    .orn{
+      position:absolute; top:3mm; inset-inline-end:5mm; display:flex; gap:2mm;
+    }
+    .dot{width:3mm; height:3mm; border-radius:50%; background:conic-gradient(from 0deg, var(--accent), var(--accent2), var(--gold), var(--mint), var(--accent)); box-shadow:0 0 0 1px #94a3b8 inset}
+
+    /* כותרת עליונה למסך בלבד */
+    .legend{display:flex; align-items:center; gap:6px; color:#475569; font-size:12px; margin-bottom:6px}
+    .legend .sw{width:10px; height:10px; border-radius:50%}
+
+    /* —— הדפסה —— */
+    @media print{
+      header{display:none}
+      main{padding:0}
+      body{background:#fff}
+      .card{box-shadow:none}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="title">קלפי משימות – “הפוך על הפוך” (לשימוש והדפסה)</div>
+    <div class="subtitle">הוראות: גוזרים את הקלפים. בתורכם – מבצעים את המשימה <b>הפוך</b> כדי שהשאר ינחשו מה היה כתוב.</div>
+    <div class="controls">
+      <button onclick="window.print()">הדפס דף(ים)</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="sheet">
+      <!-- 42 קלפים לפחות, פשוטים וברורים לניחוש -->
+      <div class="card"><span class="num">קלף 1</span><div class="orn"><span class="dot"></span><span class="dot"></span></div>למחוא כפיים</div>
+      <div class="card"><span class="num">קלף 2</span><div class="orn"><span class="dot"></span><span class="dot"></span></div>לשתות מים מכוס</div>
+      <div class="card"><span class="num">קלף 3</span><div class="orn"><span class="dot"></span><span class="dot"></span></div>לקפוץ במקום</div>
+      <div class="card"><span class="num">קלף 4</span><div class="orn"><span class="dot"></span><span class="dot"></span></div>לנופף לשלום ביד</div>
+      <div class="card"><span class="num">קלף 5</span><div class="orn"><span class="dot"></span><span class="dot"></span></div>לחייך חיוך גדול</div>
+      <div class="card"><span class="num">קלף 6</span><div class="orn"><span class="dot"></span><span class="dot"></span></div>לשיר שיר קצר</div>
+      <div class="card"><span class="num">קלף 7</span><div class="orn"><span class="dot"></span><span class="dot"></span></div>לספור מ־1 עד 5</div>
+      <div class="card"><span class="num">קלף 8</span><div class="orn"><span class="dot"></span><span class="dot"></span></div>לפתוח דלת (דמיונית)</div>
+      <div class="card"><span class="num">קלף 9</span><div class="orn"><span class="dot"></span><span class="dot"></span></div>להתמתח גבוה</div>
+      <div class="card"><span class="num">קלף 10</span><div class="orn"><span class="dot"></span><span class="dot"></span></div>לעשות סיבוב במקום</div>
+      <div class="card"><span class="num">קלף 11</span><div class="orn"><span class="dot"></span><span class="dot"></span></div>לשבת על כיסא</div>
+      <div class="card"><span class="num">קלף 12</span><div class="orn"><span class="dot"></span><span class="dot"></span></div>לעמוד זקוף כמו חייל</div>
+      <div class="card"><span class="num">קלף 13</span><div class="orn"><span class="dot"></span><span class="dot"></span></div>לצייר עיגול באוויר</div>
+      <div class="card"><span class="num">קלף 14</span><div class="orn"><span class="dot"></span><span class="dot"></span></div>לקרוא ספר (דמיוני)</div>
+      <div class="card"><span class="num">קלף 15</span><div class="orn"><span class="dot"></span><span class="dot"></span></div>לנשום עמוק</div>
+      <div class="card"><span class="num">קלף 16</span><div class="orn"><span class="dot"></span><span class="dot"></span></div>לשרוק</div>
+      <div class="card"><span class="num">קלף 17</span><div class="orn"><span class="dot"></span><span class="dot"></span></div>להגיד את השם שלך</div>
+      <div class="card"><span class="num">קלף 18</span><div class="orn"><span class="dot"></span><span class="dot"></span></div>לצעוק "יש!"</div>
+      <div class="card"><span class="num">קלף 19</span><div class="orn"><span class="dot"></span><span class="dot"></span></div>לפתוח ברז (דמיוני)</div>
+      <div class="card"><span class="num">קלף 20</span><div class="orn"><span class="dot"></span><span class="dot"></span></div>לנגב שולחן</div>
+      <div class="card"><span class="num">קלף 21</span><div class="orn"><span class="dot"></span><span class="dot"></span></div>לצלצל בפעמון (דמיוני)</div>
+      <div class="card"><span class="num">קלף 22</span><div class="orn"><span class="dot"></span><span class="dot"></span></div>לצייר לב באוויר</div>
+      <div class="card"><span class="num">קלף 23</span><div class="orn"><span class="dot"></span><span class="dot"></span></div>לפתוח בקבוק (דמיוני)</div>
+      <div class="card"><span class="num">קלף 24</span><div class="orn"><span class="dot"></span><span class="dot"></span></div>להניח ספר על השולחן</div>
+      <div class="card"><span class="num">קלף 25</span><div class="orn"><span class="dot"></span><span class="dot"></span></div>לשטוף ידיים</div>
+      <div class="card"><span class="num">קלף 26</span><div class="orn"><span class="dot"></span><span class="dot"></span></div>לסגור חלון (דמיוני)</div>
+      <div class="card"><span class="num">קלף 27</span><div class="orn"><span class="dot"></span><span class="dot"></span></div>לכבות אור (דמיוני)</div>
+      <div class="card"><span class="num">קלף 28</span><div class="orn"><span class="dot"></span><span class="dot"></span></div>לפתוח מטרייה (דמיונית)</div>
+      <div class="card"><span class="num">קלף 29</span><div class="orn"><span class="dot"></span><span class="dot"></span></div>לגרוב גרב (דמיוני)</div>
+      <div class="card"><span class="num">קלף 30</span><div class="orn"><span class="dot"></span><span class="dot"></span></div>לשים משקפיים (דמיוני)</div>
+      <div class="card"><span class="num">קלף 31</span><div class="orn"><span class="dot"></span><span class="dot"></span></div>להרים ספר מהרצפה</div>
+      <div class="card"><span class="num">קלף 32</span><div class="orn"><span class="dot"></span><span class="dot"></span></div>לעשות שלום בראש</div>
+      <div class="card"><span class="num">קלף 33</span><div class="orn"><span class="dot"></span><span class="dot"></span></div>להראות פרצוף שמח</div>
+      <div class="card"><span class="num">קלף 34</span><div class="orn"><span class="dot"></span><span class="dot"></span></div>לצעוד שלושה צעדים קדימה</div>
+      <div class="card"><span class="num">קלף 35</span><div class="orn"><span class="dot"></span><span class="dot"></span></div>להרים יד לשאלה</div>
+      <div class="card"><span class="num">קלף 36</span><div class="orn"><span class="dot"></span><span class="dot"></span></div>לקרוא "שלום"</div>
+      <div class="card"><span class="num">קלף 37</span><div class="orn"><span class="dot"></span><span class="dot"></span></div>להדליק נר (דמיוני)</div>
+      <div class="card"><span class="num">קלף 38</span><div class="orn"><span class="dot"></span><span class="dot"></span></div>לנגן בגיטרה (דמיוני)</div>
+      <div class="card"><span class="num">קלף 39</span><div class="orn"><span class="dot"></span><span class="dot"></span></div>לצלם תמונה (דמיוני)</div>
+      <div class="card"><span class="num">קלף 40</span><div class="orn"><span class="dot"></span><span class="dot"></span></div>להפעיל שעון מעורר (דמיוני)</div>
+      <div class="card"><span class="num">קלף 41</span><div class="orn"><span class="dot"></span><span class="dot"></span></div>לעשות קידה</div>
+      <div class="card"><span class="num">קלף 42</span><div class="orn"><span class="dot"></span><span class="dot"></span></div>לסובב מפתח (דמיוני)</div>
+    </section>
+  </main>
+</body>
+</html>
